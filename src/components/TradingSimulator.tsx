@@ -23,9 +23,9 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
   const [direction, setDirection] = useState<'up' | 'down' | null>(null);
   const [result, setResult] = useState<'win' | 'lose' | null>(null);
   const [isTrading, setIsTrading] = useState(false);
-  const [betAmount, setBetAmount] = useState(10);
+  const [betAmount, setBetAmount] = useState(30); // Initialize with full balance
   const [showResults, setShowResults] = useState(false);
-  const [customBetAmount, setCustomBetAmount] = useState("10");
+  const [customBetAmount, setCustomBetAmount] = useState("30"); // Initialize with full balance
   const [currentCrypto, setCurrentCrypto] = useState<'BTC' | 'ETH' | 'SOL'>('BTC');
   const [showWelcomeDialog, setShowWelcomeDialog] = useState(true);
   const { toast } = useToast();
@@ -58,6 +58,12 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
       onSimulationComplete();
     }
   }, [balance, onBalanceChange, onSimulationComplete]);
+
+  // Always set bet amount to the current balance
+  useEffect(() => {
+    setBetAmount(balance);
+    setCustomBetAmount(balance.toString());
+  }, [balance]);
 
   // Change cryptocurrency based on the step
   useEffect(() => {
@@ -147,15 +153,6 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
         
         if (currentStep < outcomes.length - 1) {
           setCurrentStep(prev => prev + 1);
-          
-          // Suggest increasing bet amount for later stages
-          if (currentStep === 0) {
-            setBetAmount(prev => Math.min(30, balance / 3));
-            setCustomBetAmount("30");
-          } else if (currentStep === 2) {
-            setBetAmount(prev => Math.min(50, balance / 3));
-            setCustomBetAmount("50");
-          }
         }
       }, 2000);
     }, 3000);
