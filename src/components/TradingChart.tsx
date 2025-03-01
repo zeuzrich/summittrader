@@ -192,8 +192,19 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
         ctx.strokeStyle = '#718096'; // gray-600
         ctx.stroke();
         
+        // Modified: Use the user's selected direction color for candles when trading
+        let candleColor;
+        
+        if (close > open) {
+          // Green candle (price went up)
+          candleColor = direction === 'up' && isTrading ? '#38A169' : '#38A169'; // green-600 
+        } else {
+          // Red candle (price went down)
+          candleColor = direction === 'down' && isTrading ? '#E53E3E' : '#E53E3E'; // red-600
+        }
+        
         // Draw candle body
-        ctx.fillStyle = close > open ? '#38A169' : '#E53E3E'; // green-600 or red-600
+        ctx.fillStyle = candleColor;
         ctx.fillRect(
           x + candleWidth * 0.5,
           Math.min(yOpen, yClose),
@@ -202,15 +213,18 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
         );
       });
       
-      // Draw arrows for prediction
+      // Draw arrows for prediction - now using the user's selected direction color
       if (direction && isTrading) {
         const lastX = padding + (pattern.initialData.length - 0.5) * (chartWidth / data.length);
         const lastY = padding + chartHeight - ((pattern.initialData[pattern.initialData.length - 1] - min) / range * chartHeight);
         
+        // Use direction-specific colors
+        const arrowColor = direction === 'up' ? '#38A169' : '#E53E3E'; // green for up, red for down
+        
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
         ctx.lineTo(lastX + chartWidth * 0.15, direction === 'up' ? lastY - chartHeight * 0.15 : lastY + chartHeight * 0.15);
-        ctx.strokeStyle = '#ECC94B'; // yellow-500
+        ctx.strokeStyle = arrowColor;
         ctx.lineWidth = 2;
         ctx.stroke();
         
@@ -226,21 +240,24 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
           ctx.lineTo(lastX + chartWidth * 0.17, lastY + chartHeight * 0.13);
         }
         ctx.closePath();
-        ctx.fillStyle = '#ECC94B'; // yellow-500
+        ctx.fillStyle = arrowColor;
         ctx.fill();
       }
       
-      // Draw result arrow if trade is completed
+      // Draw result arrow if trade is completed - also using direction colors
       if (result && !isTrading) {
         const lastCandle = data.length - 1;
         const lastX = padding + lastCandle * (chartWidth / data.length);
         const beforeLastY = padding + chartHeight - ((data[lastCandle - 1] - min) / range * chartHeight);
         const lastY = padding + chartHeight - ((data[lastCandle] - min) / range * chartHeight);
         
+        // Use a color based on the result (win/lose)
+        const resultColor = result === 'win' ? '#38A169' : '#E53E3E'; // green for win, red for lose
+        
         ctx.beginPath();
         ctx.moveTo(lastX - chartWidth * 0.1, beforeLastY);
         ctx.lineTo(lastX + chartWidth * 0.1, lastY);
-        ctx.strokeStyle = '#ECC94B'; // yellow-500
+        ctx.strokeStyle = resultColor;
         ctx.lineWidth = 2;
         ctx.stroke();
         
@@ -256,7 +273,7 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
           ctx.lineTo(lastX + chartWidth * 0.12, lastY - chartHeight * 0.02);
         }
         ctx.closePath();
-        ctx.fillStyle = '#ECC94B'; // yellow-500
+        ctx.fillStyle = resultColor;
         ctx.fill();
       }
     };
