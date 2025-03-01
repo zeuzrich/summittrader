@@ -2,8 +2,15 @@
 import { useState, useEffect } from "react";
 import TradingChart from "./TradingChart";
 import { formatCurrency } from "@/lib/utils";
-import { Bitcoin, DollarSign, Gem } from "lucide-react";
+import { Bitcoin, DollarSign, Gem, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "@/components/ui/dialog";
 
 interface TradingSimulatorProps {
   onBalanceChange: (balance: number) => void;
@@ -20,7 +27,7 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
   const [showResults, setShowResults] = useState(false);
   const [customBetAmount, setCustomBetAmount] = useState("10");
   const [currentCrypto, setCurrentCrypto] = useState<'BTC' | 'ETH' | 'SOL'>('BTC');
-  const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(true);
   const { toast } = useToast();
 
   // Cryptocurrencies data
@@ -38,17 +45,10 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
     { win: true, multiplier: 5 },      // Step 4: Final big win to reach R$500
   ];
 
-  // Show welcome toast on component mount
-  useEffect(() => {
-    if (showWelcomeMessage) {
-      toast({
-        title: "Parabéns!",
-        description: "Você recebeu R$30 para operar com criptomoedas.",
-        duration: 5000,
-      });
-      setShowWelcomeMessage(false);
-    }
-  }, [showWelcomeMessage, toast]);
+  // Handle welcome dialog close
+  const handleStartTrading = () => {
+    setShowWelcomeDialog(false);
+  };
 
   useEffect(() => {
     onBalanceChange(balance);
@@ -228,6 +228,27 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
           </p>
         </div>
       )}
+
+      {/* Welcome Dialog */}
+      <Dialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
+        <DialogContent className="bg-gray-900 border border-gray-800 text-white sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-center">Parabéns!</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 text-center">
+            <p className="text-lg mb-2">Você recebeu R$30 para operar com criptomoedas.</p>
+            <p className="text-gray-400">Comece a operar agora mesmo e multiplique seus ganhos!</p>
+          </div>
+          <DialogFooter>
+            <button 
+              onClick={handleStartTrading}
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              Começar <Play className="w-4 h-4" />
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
