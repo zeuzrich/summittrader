@@ -13,32 +13,48 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
   const animationRef = useRef<number | null>(null);
   const [animationTime, setAnimationTime] = useState(0);
   
-  // Chart patterns for each step
+  // Chart patterns for each step - updated to be favorable to user's choice in winning stages
+  // and updated to support only losing on step 3
   const chartPatterns = [
-    // Step 1: Downtrend
+    // Step 1: Uptrend (Win)
     {
-      initialData: [30, 35, 33, 38, 36, 32, 34, 31, 33, 29],
-      tradingData: direction === 'up' ? [28, 26, 24, 25] : [30, 32, 34, 33]
+      initialData: [25, 27, 26, 28, 27, 29, 28, 30, 31, 32],
+      tradingData: {
+        up: [33, 35, 37, 39], // Favorable for "up" choice
+        down: [31, 33, 34, 36] // Still goes up but less dramatically
+      }
     },
-    // Step 2: Uptrend after dip
+    // Step 2: Uptrend after dip (Win)
     {
-      initialData: [25, 22, 24, 21, 23, 20, 21, 22, 24, 25],
-      tradingData: direction === 'up' ? [27, 29, 31, 33] : [23, 21, 19, 18]
+      initialData: [30, 28, 29, 27, 28, 30, 31, 32, 33, 34],
+      tradingData: {
+        up: [35, 37, 39, 41], // Favorable for "up" choice
+        down: [33, 35, 36, 38] // Still goes up but less dramatically
+      }
     },
-    // Step 3: Choppy then down
+    // Step 3: Choppy then down (Lose - only loss)
     {
-      initialData: [30, 32, 31, 33, 32, 34, 33, 35, 33, 34],
-      tradingData: direction === 'up' ? [35, 34, 32, 30] : [32, 30, 28, 26]
+      initialData: [35, 37, 36, 38, 37, 39, 38, 37, 36, 35],
+      tradingData: {
+        up: [34, 32, 30, 28], // Goes down (bad for "up" choice)
+        down: [36, 38, 40, 42]  // Goes up (bad for "down" choice)
+      }
     },
-    // Step 4: Strong uptrend
+    // Step 4: Strong uptrend (Win)
     {
-      initialData: [25, 23, 24, 22, 20, 22, 24, 26, 28, 30],
-      tradingData: direction === 'up' ? [32, 34, 37, 40] : [28, 26, 24, 22]
+      initialData: [25, 23, 24, 26, 27, 29, 30, 32, 33, 35],
+      tradingData: {
+        up: [37, 40, 43, 46], // Favorable for "up" choice
+        down: [34, 37, 39, 41] // Still goes up but less dramatically
+      }
     },
-    // Step 5: Final uptrend
+    // Step 5: Final uptrend (Big Win)
     {
-      initialData: [30, 32, 34, 36, 38, 40, 38, 40, 42, 44],
-      tradingData: direction === 'up' ? [46, 48, 51, 55] : [42, 40, 38, 36]
+      initialData: [40, 42, 44, 46, 45, 47, 48, 50, 51, 53],
+      tradingData: {
+        up: [55, 58, 62, 66], // Major uptrend for final win
+        down: [52, 55, 58, 62] // Still goes up for final win
+      }
     }
   ];
 
@@ -132,12 +148,15 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
       let data = [...pattern.initialData];
       
       if (isTrading && direction) {
+        // Get the appropriate trading data based on user's selected direction
+        const directionData = pattern.tradingData[direction];
+        
         // Calculate how many candles of trading data to show based on progress
-        const tradingDataLength = pattern.tradingData.length;
+        const tradingDataLength = directionData.length;
         const candlesToShow = Math.floor(progress * tradingDataLength);
         
         if (candlesToShow > 0) {
-          data.push(...pattern.tradingData.slice(0, candlesToShow));
+          data.push(...directionData.slice(0, candlesToShow));
         }
       }
       

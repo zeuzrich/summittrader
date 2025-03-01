@@ -18,12 +18,12 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
   const [showResults, setShowResults] = useState(false);
   const [customBetAmount, setCustomBetAmount] = useState("10");
 
-  // Predefined outcomes to ensure user ends with R$500
+  // Predefined outcomes - now the user only loses on step 3
   const outcomes = [
-    { win: false, multiplier: 1 },     // Step 1: Lose
-    { win: true, multiplier: 2 },      // Step 2: Win (to keep them engaged)
-    { win: false, multiplier: 1.5 },   // Step 3: Lose
-    { win: true, multiplier: 3 },      // Step 4: Big win
+    { win: true, multiplier: 1.5 },    // Step 1: Win
+    { win: true, multiplier: 2 },      // Step 2: Win
+    { win: false, multiplier: 1 },     // Step 3: Lose (only loss)
+    { win: true, multiplier: 3 },      // Step 4: Win
     { win: true, multiplier: 5 },      // Step 5: Final big win to reach R$500
   ];
 
@@ -34,7 +34,7 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
     if (balance >= 500) {
       onSimulationComplete();
     }
-  }, [balance, onBalanceChange]);
+  }, [balance, onBalanceChange, onSimulationComplete]);
 
   const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -56,9 +56,23 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
     // Simulate trade duration
     setTimeout(() => {
       const currentOutcome = outcomes[currentStep];
-      const isCorrect = 
-        (selectedDirection === 'up' && currentOutcome.win) || 
-        (selectedDirection === 'down' && !currentOutcome.win);
+      
+      // For winning stages, make the result match the user's selection
+      // For the losing stage (step 3), make the result opposite of user's selection
+      let isCorrect = currentOutcome.win;
+      
+      if (currentOutcome.win) {
+        // If this is a winning stage, user always wins regardless of direction
+        isCorrect = true;
+      } else {
+        // If this is a losing stage, user loses but never more than 30% of their balance
+        isCorrect = false;
+        // Ensure they don't lose too much
+        const maxLoss = Math.min(betAmount, balance * 0.3);
+        if (betAmount > maxLoss) {
+          setBetAmount(maxLoss);
+        }
+      }
       
       const newResult = isCorrect ? 'win' : 'lose';
       setResult(newResult);
@@ -67,7 +81,9 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
       if (newResult === 'win') {
         newBalance += betAmount * currentOutcome.multiplier;
       } else {
-        newBalance -= betAmount;
+        // Ensure they don't lose more than 30% of their balance
+        const safeLossAmount = Math.min(betAmount, balance * 0.3);
+        newBalance -= safeLossAmount;
       }
       
       setBalance(Math.round(newBalance));
@@ -85,10 +101,10 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
           
           // Suggest increasing bet amount for later stages
           if (currentStep === 1) {
-            setBetAmount(prev => Math.min(30, balance / 2));
+            setBetAmount(prev => Math.min(30, balance / 3));
             setCustomBetAmount("30");
           } else if (currentStep === 3) {
-            setBetAmount(prev => Math.min(50, balance / 2));
+            setBetAmount(prev => Math.min(50, balance / 3));
             setCustomBetAmount("50");
           }
         }
