@@ -28,7 +28,7 @@ const Header = ({ balance }: HeaderProps) => {
   return (
     <header className="bg-gray-900 border-b border-gray-800 p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-xl md:text-2xl font-bold">
+        <div className="text-lg md:text-xl font-bold">
           Summit
         </div>
         <div className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700 shadow-sm">
