@@ -13,7 +13,7 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
   const [animationTime, setAnimationTime] = useState(0);
   
   // Chart patterns for each step - updated to be favorable to user's choice in winning stages
-  // and updated to support only losing on step 3
+  // and updated to support only losing on step 2
   const chartPatterns = [
     // Step 1: Uptrend (Win)
     {
@@ -23,15 +23,7 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
         down: [31, 33, 34, 36] // Still goes up but less dramatically
       }
     },
-    // Step 2: Uptrend after dip (Win)
-    {
-      initialData: [30, 28, 29, 27, 28, 30, 31, 32, 33, 34],
-      tradingData: {
-        up: [35, 37, 39, 41], // Favorable for "up" choice
-        down: [33, 35, 36, 38] // Still goes up but less dramatically
-      }
-    },
-    // Step 3: Choppy then down (Lose - only loss)
+    // Step 2: Choppy then down (Lose - only loss)
     {
       initialData: [35, 37, 36, 38, 37, 39, 38, 37, 36, 35],
       tradingData: {
@@ -39,7 +31,7 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
         down: [36, 38, 40, 42]  // Goes up (bad for "down" choice)
       }
     },
-    // Step 4: Strong uptrend (Win)
+    // Step 3: Strong uptrend (Win)
     {
       initialData: [25, 23, 24, 26, 27, 29, 30, 32, 33, 35],
       tradingData: {
@@ -47,7 +39,7 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
         down: [34, 37, 39, 41] // Still goes up but less dramatically
       }
     },
-    // Step 5: Final uptrend (Big Win)
+    // Step 4: Final uptrend (Big Win)
     {
       initialData: [40, 42, 44, 46, 45, 47, 48, 50, 51, 53],
       tradingData: {

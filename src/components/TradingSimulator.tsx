@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import TradingChart from "./TradingChart";
 import { formatCurrency } from "@/lib/utils";
 import { Bitcoin, DollarSign, Gem } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface TradingSimulatorProps {
   onBalanceChange: (balance: number) => void;
@@ -11,7 +12,7 @@ interface TradingSimulatorProps {
 
 const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimulatorProps) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [balance, setBalance] = useState(20);
+  const [balance, setBalance] = useState(30);
   const [direction, setDirection] = useState<'up' | 'down' | null>(null);
   const [result, setResult] = useState<'win' | 'lose' | null>(null);
   const [isTrading, setIsTrading] = useState(false);
@@ -19,6 +20,8 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
   const [showResults, setShowResults] = useState(false);
   const [customBetAmount, setCustomBetAmount] = useState("10");
   const [currentCrypto, setCurrentCrypto] = useState<'BTC' | 'ETH' | 'SOL'>('BTC');
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
+  const { toast } = useToast();
 
   // Cryptocurrencies data
   const cryptoData = {
@@ -27,14 +30,25 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
     SOL: { name: 'Solana (SOL-X)', icon: <DollarSign className="w-5 h-5" /> }
   };
 
-  // Predefined outcomes - now the user only loses on step 3
+  // Predefined outcomes - now with 4 steps, losing only on step 2
   const outcomes = [
-    { win: true, multiplier: 1.5 },    // Step 1: Win
-    { win: true, multiplier: 2 },      // Step 2: Win
-    { win: false, multiplier: 1 },     // Step 3: Lose (only loss)
-    { win: true, multiplier: 3 },      // Step 4: Win
-    { win: true, multiplier: 5 },      // Step 5: Final big win to reach R$500
+    { win: true, multiplier: 2 },      // Step 1: Win
+    { win: false, multiplier: 1 },     // Step 2: Lose (only loss)
+    { win: true, multiplier: 2.5 },    // Step 3: Win
+    { win: true, multiplier: 5 },      // Step 4: Final big win to reach R$500
   ];
+
+  // Show welcome toast on component mount
+  useEffect(() => {
+    if (showWelcomeMessage) {
+      toast({
+        title: "Parabéns!",
+        description: "Você recebeu R$30 para operar com criptomoedas.",
+        duration: 5000,
+      });
+      setShowWelcomeMessage(false);
+    }
+  }, [showWelcomeMessage, toast]);
 
   useEffect(() => {
     onBalanceChange(balance);
@@ -47,7 +61,7 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
 
   // Change cryptocurrency based on the step
   useEffect(() => {
-    const cryptos: ('BTC' | 'ETH' | 'SOL')[] = ['BTC', 'ETH', 'SOL', 'BTC', 'ETH'];
+    const cryptos: ('BTC' | 'ETH' | 'SOL')[] = ['BTC', 'ETH', 'SOL', 'BTC'];
     setCurrentCrypto(cryptos[currentStep]);
   }, [currentStep]);
 
@@ -93,7 +107,7 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
       const currentOutcome = outcomes[currentStep];
       
       // For winning stages, make the result match the user's selection
-      // For the losing stage (step 3), make the result opposite of user's selection
+      // For the losing stage (step 2), make the result opposite of user's selection
       let isCorrect = currentOutcome.win;
       
       if (currentOutcome.win) {
@@ -135,10 +149,10 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
           setCurrentStep(prev => prev + 1);
           
           // Suggest increasing bet amount for later stages
-          if (currentStep === 1) {
+          if (currentStep === 0) {
             setBetAmount(prev => Math.min(30, balance / 3));
             setCustomBetAmount("30");
-          } else if (currentStep === 3) {
+          } else if (currentStep === 2) {
             setBetAmount(prev => Math.min(50, balance / 3));
             setCustomBetAmount("50");
           }
