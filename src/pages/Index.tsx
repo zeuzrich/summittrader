@@ -3,6 +3,7 @@ import { useState } from "react";
 import TradingSimulator from "@/components/TradingSimulator";
 import VideoModal from "@/components/VideoModal";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -38,6 +39,7 @@ const Index = () => {
         )}
       </main>
 
+      <Footer />
       <VideoModal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
     </div>
   );

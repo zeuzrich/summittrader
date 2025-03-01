@@ -16,6 +16,7 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
   const [isTrading, setIsTrading] = useState(false);
   const [betAmount, setBetAmount] = useState(10);
   const [showResults, setShowResults] = useState(false);
+  const [customBetAmount, setCustomBetAmount] = useState("10");
 
   // Predefined outcomes to ensure user ends with R$500
   const outcomes = [
@@ -34,6 +35,16 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
       onSimulationComplete();
     }
   }, [balance, onBalanceChange]);
+
+  const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCustomBetAmount(value);
+    
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue > 0 && numValue <= balance) {
+      setBetAmount(numValue);
+    }
+  };
 
   const placeTrade = (selectedDirection: 'up' | 'down') => {
     if (isTrading || balance < betAmount) return;
@@ -72,11 +83,13 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
         if (currentStep < outcomes.length - 1) {
           setCurrentStep(prev => prev + 1);
           
-          // Increase bet amount for later stages to reach R$500
-          if (currentStep === 2) {
-            setBetAmount(30);
+          // Suggest increasing bet amount for later stages
+          if (currentStep === 1) {
+            setBetAmount(prev => Math.min(30, balance / 2));
+            setCustomBetAmount("30");
           } else if (currentStep === 3) {
-            setBetAmount(50);
+            setBetAmount(prev => Math.min(50, balance / 2));
+            setCustomBetAmount("50");
           }
         }
       }, 2000);
@@ -87,7 +100,7 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
     <div className="bg-gray-900 rounded-xl p-4 md:p-6 shadow-xl border border-gray-800 animate-fade-in">
       <h1 className="text-xl md:text-2xl font-bold mb-6 text-center">Simulador de Trading</h1>
       
-      <div className="mb-8">
+      <div className="mb-6">
         <TradingChart 
           currentStep={currentStep} 
           direction={direction}
@@ -99,8 +112,18 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
         <div className="w-full md:w-auto">
           <p className="text-gray-400 mb-1 text-sm">Valor da operação</p>
-          <div className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700">
-            {formatCurrency(betAmount)}
+          <div className="flex items-center space-x-2">
+            <input
+              type="number"
+              value={customBetAmount}
+              onChange={handleBetAmountChange}
+              min="1"
+              max={balance}
+              step="1"
+              disabled={isTrading}
+              className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700 w-24 text-center"
+            />
+            <span className="text-gray-400 text-sm">/ {formatCurrency(balance)}</span>
           </div>
         </div>
         
@@ -136,10 +159,6 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
           </p>
         </div>
       )}
-      
-      <div className="bg-gray-800/50 rounded-lg p-4 text-sm text-gray-400">
-        <p>Etapa {currentStep + 1} de 5</p>
-      </div>
     </div>
   );
 };
