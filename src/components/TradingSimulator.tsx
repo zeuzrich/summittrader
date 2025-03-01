@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import TradingChart from "./TradingChart";
 import { formatCurrency } from "@/lib/utils";
@@ -22,9 +21,9 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
 
   // Cryptocurrencies data
   const cryptoData = {
-    BTC: { name: 'Bitcoin', icon: <Bitcoin className="w-5 h-5" /> },
-    ETH: { name: 'Ethereum', icon: <Gem className="w-5 h-5" /> },
-    SOL: { name: 'Solana', icon: <DollarSign className="w-5 h-5" /> }
+    BTC: { name: 'Bitcoin (BTC-X)', icon: <Bitcoin className="w-5 h-5" /> },
+    ETH: { name: 'Ethereum (ETH-X)', icon: <Gem className="w-5 h-5" /> },
+    SOL: { name: 'Solana (SOL-X)', icon: <DollarSign className="w-5 h-5" /> }
   };
 
   // Predefined outcomes - now the user only loses on step 3
