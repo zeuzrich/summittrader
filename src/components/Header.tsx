@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { formatCurrency } from "@/lib/utils";
+import { Menu } from "lucide-react";
 
 interface HeaderProps {
   balance: number;
@@ -28,11 +29,11 @@ const Header = ({ balance }: HeaderProps) => {
   return (
     <header className="bg-gray-900 border-b border-gray-800 p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-lg md:text-xl font-bold">
-          Summit
+        <div className="text-lg md:text-xl">
+          <Menu className="w-6 h-6" />
         </div>
-        <div className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700 shadow-sm">
-          <span className="text-gray-400 text-sm mr-2">Saldo:</span>
+        <div className="bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700 shadow-sm text-sm">
+          <span className="text-gray-400 mr-1">Saldo:</span>
           <span className={`font-bold ${animatedBalance > 20 ? 'text-green-500' : animatedBalance < 20 ? 'text-red-500' : 'text-white'}`}>
             {formatCurrency(animatedBalance)}
           </span>
