@@ -36,13 +36,33 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
     }
   }, [balance, onBalanceChange, onSimulationComplete]);
 
+  // Updated to prevent entering values higher than balance
   const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setCustomBetAmount(value);
     
     const numValue = parseFloat(value);
-    if (!isNaN(numValue) && numValue > 0 && numValue <= balance) {
-      setBetAmount(numValue);
+    if (!isNaN(numValue) && numValue > 0) {
+      // Ensure bet amount doesn't exceed balance
+      const validBetAmount = Math.min(numValue, balance);
+      setBetAmount(validBetAmount);
+      setCustomBetAmount(validBetAmount.toString());
+    } else {
+      setCustomBetAmount(value);
+    }
+  };
+
+  // Additional validation when input loses focus
+  const handleInputBlur = () => {
+    const numValue = parseFloat(customBetAmount);
+    if (isNaN(numValue) || numValue <= 0) {
+      // Reset to minimum value if invalid
+      setBetAmount(1);
+      setCustomBetAmount("1");
+    } else {
+      // Ensure bet amount doesn't exceed balance
+      const validBetAmount = Math.min(numValue, balance);
+      setBetAmount(validBetAmount);
+      setCustomBetAmount(validBetAmount.toString());
     }
   };
 
@@ -133,6 +153,7 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
               type="number"
               value={customBetAmount}
               onChange={handleBetAmountChange}
+              onBlur={handleInputBlur}
               min="1"
               max={balance}
               step="1"

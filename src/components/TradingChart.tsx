@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 
 interface TradingChartProps {
@@ -192,15 +191,29 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
         ctx.strokeStyle = '#718096'; // gray-600
         ctx.stroke();
         
-        // Modified: Use the user's selected direction color for candles when trading
+        // Use the user's selected direction color for candles
+        // NEW: For the last candle in winning stages, use the user's direction color
         let candleColor;
+        
+        // Check if this is the last candle
+        const isLastCandle = index === data.length - 1;
         
         if (close > open) {
           // Green candle (price went up)
-          candleColor = direction === 'up' && isTrading ? '#38A169' : '#38A169'; // green-600 
+          candleColor = '#38A169'; // green-600
+          
+          // For last candle in winning stages, use the user's direction color
+          if (isLastCandle && direction && isTrading && currentStep !== 2) {
+            candleColor = direction === 'up' ? '#38A169' : '#E53E3E';
+          }
         } else {
           // Red candle (price went down)
-          candleColor = direction === 'down' && isTrading ? '#E53E3E' : '#E53E3E'; // red-600
+          candleColor = '#E53E3E'; // red-600
+          
+          // For last candle in winning stages, use the user's direction color
+          if (isLastCandle && direction && isTrading && currentStep !== 2) {
+            candleColor = direction === 'down' ? '#E53E3E' : '#38A169';
+          }
         }
         
         // Draw candle body
@@ -213,7 +226,7 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
         );
       });
       
-      // Draw arrows for prediction - now using the user's selected direction color
+      // Draw arrows for prediction - using the user's selected direction color
       if (direction && isTrading) {
         const lastX = padding + (pattern.initialData.length - 0.5) * (chartWidth / data.length);
         const lastY = padding + chartHeight - ((pattern.initialData[pattern.initialData.length - 1] - min) / range * chartHeight);
@@ -244,7 +257,7 @@ const TradingChart = ({ currentStep, direction, result, isTrading }: TradingChar
         ctx.fill();
       }
       
-      // Draw result arrow if trade is completed - also using direction colors
+      // Draw result arrow if trade is completed
       if (result && !isTrading) {
         const lastCandle = data.length - 1;
         const lastX = padding + lastCandle * (chartWidth / data.length);
