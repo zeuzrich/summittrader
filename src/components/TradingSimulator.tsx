@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import TradingChart from "./TradingChart";
 import { formatCurrency } from "@/lib/utils";
