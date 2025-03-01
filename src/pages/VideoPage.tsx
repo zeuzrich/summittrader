@@ -23,9 +23,7 @@ const VideoPage = () => {
       <main className="flex-1">
         <div className="bg-transparent py-6">
           <h2 className="text-xl md:text-2xl font-bold text-center px-4">
-            <span className="block">FAÇA 500 REAIS ENQUANTO ASSISTE, OU EU</span>
-            <span className="block">SOU OBRIGADO A <span className="bg-orange-500 text-black px-2 font-extrabold">TE ENVIAR 1.000 REAIS DO</span></span>
-            <span className="block">MEU BOLSO</span>
+            <span>FAÇA 500 REAIS ENQUANTO ASSISTE, OU EU SOU OBRIGADO A <span className="bg-orange-500 text-black px-2 font-extrabold">TE ENVIAR 1.000 REAIS DO</span> MEU BOLSO</span>
           </h2>
         </div>
         
