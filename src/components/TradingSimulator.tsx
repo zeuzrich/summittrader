@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import TradingChart from "./TradingChart";
 import { formatCurrency } from "@/lib/utils";
-import { Bitcoin, Ethereum, DollarSign } from "lucide-react";
+import { Bitcoin, DollarSign, Gem } from "lucide-react";
 
 interface TradingSimulatorProps {
   onBalanceChange: (balance: number) => void;
@@ -23,7 +23,7 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
   // Cryptocurrencies data
   const cryptoData = {
     BTC: { name: 'Bitcoin', icon: <Bitcoin className="w-5 h-5" /> },
-    ETH: { name: 'Ethereum', icon: <Ethereum className="w-5 h-5" /> },
+    ETH: { name: 'Ethereum', icon: <Gem className="w-5 h-5" /> },
     SOL: { name: 'Solana', icon: <DollarSign className="w-5 h-5" /> }
   };
 
