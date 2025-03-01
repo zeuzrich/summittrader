@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import TradingChart from "./TradingChart";
 import { formatCurrency } from "@/lib/utils";
+import { Bitcoin, Ethereum, DollarSign } from "lucide-react";
 
 interface TradingSimulatorProps {
   onBalanceChange: (balance: number) => void;
@@ -17,6 +18,14 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
   const [betAmount, setBetAmount] = useState(10);
   const [showResults, setShowResults] = useState(false);
   const [customBetAmount, setCustomBetAmount] = useState("10");
+  const [currentCrypto, setCurrentCrypto] = useState<'BTC' | 'ETH' | 'SOL'>('BTC');
+
+  // Cryptocurrencies data
+  const cryptoData = {
+    BTC: { name: 'Bitcoin', icon: <Bitcoin className="w-5 h-5" /> },
+    ETH: { name: 'Ethereum', icon: <Ethereum className="w-5 h-5" /> },
+    SOL: { name: 'Solana', icon: <DollarSign className="w-5 h-5" /> }
+  };
 
   // Predefined outcomes - now the user only loses on step 3
   const outcomes = [
@@ -35,6 +44,12 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
       onSimulationComplete();
     }
   }, [balance, onBalanceChange, onSimulationComplete]);
+
+  // Change cryptocurrency based on the step
+  useEffect(() => {
+    const cryptos: ('BTC' | 'ETH' | 'SOL')[] = ['BTC', 'ETH', 'SOL', 'BTC', 'ETH'];
+    setCurrentCrypto(cryptos[currentStep]);
+  }, [currentStep]);
 
   // Updated to prevent entering values higher than balance
   const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,7 +149,10 @@ const TradingSimulator = ({ onBalanceChange, onSimulationComplete }: TradingSimu
 
   return (
     <div className="bg-gray-900 rounded-xl p-4 md:p-6 shadow-xl border border-gray-800 animate-fade-in">
-      <h1 className="text-xl md:text-2xl font-bold mb-6 text-center">Simulador de Trading</h1>
+      <h1 className="text-xl md:text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
+        {cryptoData[currentCrypto].icon}
+        {cryptoData[currentCrypto].name} Trading
+      </h1>
       
       <div className="mb-6">
         <TradingChart 
